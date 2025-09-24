@@ -1,0 +1,21 @@
+"use client"
+
+import { AuthGuard } from "@/components/auth-guard"
+import { DashboardLayout } from "@/components/dashboard-layout"
+import { AddTransactionForm } from "@/components/add-transaction-form"
+
+export default function AddTransactionPage() {
+  return (
+    <AuthGuard>
+      <DashboardLayout>
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold">Add Transaction</h1>
+            <p className="text-muted-foreground">Record a new income or expense transaction.</p>
+          </div>
+          <AddTransactionForm />
+        </div>
+      </DashboardLayout>
+    </AuthGuard>
+  )
+}
