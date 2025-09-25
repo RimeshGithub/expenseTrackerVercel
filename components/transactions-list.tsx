@@ -244,11 +244,26 @@ export function TransactionsList() {
       
       {/* Overview */}
       <div className="space-y-4">
-        <Card>
-          <CardContent className="flex justify-between items-center">
-            <span className="font-semibold">Overview for selected period and category-</span>
-            <span className="font-semibold">Income: Rs {incomeDisp}</span>
-            <span className="font-semibold">Expense: Rs {expenseDisp}</span>
+        <Card className="bg-gradient-to-r from-gray-50 to-gray-100 shadow-sm border">
+          <CardContent className="flex justify-between items-center py-0 px-6">
+            <span className="text-lg font-semibold text-gray-700">
+              Overview for selected period and category-
+            </span>
+
+            <div className="flex gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span className="font-semibold text-green-600">
+                  Income: Rs {incomeDisp}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <span className="font-semibold text-red-600">
+                  Expense: Rs {expenseDisp}
+                </span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

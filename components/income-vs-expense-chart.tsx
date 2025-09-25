@@ -5,9 +5,13 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 
 interface IncomeVsExpenseChartProps {
   data: Array<{ month: string; income: number; expenses: number }>
+  type: string
 }
 
-export function IncomeVsExpenseChart({ data }: IncomeVsExpenseChartProps) {
+export function IncomeVsExpenseChart({ data, type }: IncomeVsExpenseChartProps) {
+  const ADmonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const BSmonths = ["Baisakh", "Jestha", "Ashadh", "Shrawan", "Bhadra", "Ashwin", "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra"]
+
   const chartConfig = {
     income: {
       label: "Income",
@@ -19,11 +23,19 @@ export function IncomeVsExpenseChart({ data }: IncomeVsExpenseChartProps) {
     },
   }
 
+  data = data.map((item) => {
+    return {
+      month: (type === "ad" ? ADmonths[item.month.split("-")[1] - 1] : BSmonths[item.month.split("-")[1] - 1]) + "\n" + item.month.split("-")[0],
+      income: item.income,
+      expenses: item.expenses,
+    }
+  })
+
   return (
-    <ChartContainer config={chartConfig} className="h-[300px]">
+    <ChartContainer config={chartConfig} className="h-[300px] w-3xl">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <XAxis dataKey="month" />
+          <XAxis dataKey="month" fontSize={10}/>
           <YAxis />
           <ChartTooltip content={<ChartTooltipContent />} />
           <Legend />

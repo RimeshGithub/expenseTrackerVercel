@@ -8,7 +8,7 @@ export default function AddTransactionPage() {
   return (
     <AuthGuard>
       <DashboardLayout>
-        <div className="max-w-2xl mx-auto">
+        <div className="w-full mr-auto">
           <div className="mb-6">
             <h1 className="text-3xl font-bold">Add Transaction</h1>
             <p className="text-muted-foreground">Record a new income or expense transaction.</p>

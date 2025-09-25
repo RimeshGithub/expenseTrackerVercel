@@ -65,7 +65,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         })}
       </nav>
 
-      <div className="px-1 py-4 border-t">
+      <div className="px-2.5 py-4 border-t">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
             <span className="text-sm font-medium text-primary-foreground">{user?.email?.charAt(0).toUpperCase()}</span>
