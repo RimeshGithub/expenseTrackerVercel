@@ -129,7 +129,7 @@ export function TransactionsList() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-4 max-sm:items-start">
         <div>
           <h1 className="text-3xl font-bold">Transactions</h1>
           <p className="text-muted-foreground">Manage your income and expenses.</p>
@@ -144,7 +144,7 @@ export function TransactionsList() {
       {/* Filters */}
       <Card>
         <CardContent className="px-3">
-          <div className="flex gap-2.5 mb-4 bg-white p-1.5 rounded-md">
+          <div className="flex gap-2.5 mb-4 bg-white p-1.5 rounded-md max-md:flex-col max-md:gap-2">
             {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -193,10 +193,10 @@ export function TransactionsList() {
             </label>       
           </div>
           
-          <div className="flex gap-2.5 bg-white p-1.5 rounded-md justify-between">
+          <div className="flex gap-10 bg-white p-1.5 rounded-md max-md:justify-between max-md:gap-2">
             {/* Calendar Type Toggle */}
             <div className="flex items-center space-x-2 bg-muted/50 px-3 rounded-md">
-              <Label htmlFor="calendar-toggle" className="text-sm whitespace-nowrap">
+              <Label htmlFor="calendar-toggle" className="whitespace-nowrap max-sm:text-[12px]">
                 Filter in AD
               </Label>
               <Switch
@@ -204,49 +204,51 @@ export function TransactionsList() {
                 checked={useBSDate}
                 onCheckedChange={setUseBSDate}
               />
-              <Label htmlFor="calendar-toggle" className="text-sm whitespace-nowrap">
+              <Label htmlFor="calendar-toggle" className="whitespace-nowrap max-sm:text-[12px]">
                 Filter in BS
               </Label>
             </div>
+            
+            <div className="flex gap-2.5 max-md:flex-col max-md:gap-2 max-sm:text-sm">
+              {/* Year Filter */}
+              <label className="flex items-center gap-0.5">Year:
+                <Select value={filterYear} onValueChange={setFilterYear}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder={`${useBSDate ? 'BS' : 'AD'} Year`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    {yearOptions.map((y) => (
+                      <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </label>
 
-            {/* Year Filter */}
-            <label className="flex items-center gap-1">Year:
-              <Select value={filterYear} onValueChange={setFilterYear}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder={`${useBSDate ? 'BS' : 'AD'} Year`} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  {yearOptions.map((y) => (
-                    <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </label>
-
-            {/* Month Filter */}
-            <label className="flex items-center gap-1">Month:
-              <Select value={filterMonth} onValueChange={setFilterMonth}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Month" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  {monthOptions.map((m, i) => (
-                    <SelectItem key={i} value={i.toString()}>{m}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </label>
+              {/* Month Filter */}
+              <label className="flex items-center gap-0.5">Month:
+                <Select value={filterMonth} onValueChange={setFilterMonth}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    {monthOptions.map((m, i) => (
+                      <SelectItem key={i} value={i.toString()}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </label>
+            </div>
           </div>       
         </CardContent>
       </Card>
       
       {/* Overview */}
-      <div className="space-y-4">
+      <div className="space-y-4 max-md:text-sm">
         <Card className="bg-gradient-to-r from-gray-50 to-gray-100 shadow-sm border">
-          <CardContent className="flex justify-between items-center py-0 px-6">
-            <span className="text-lg font-semibold text-gray-700">
+          <CardContent className="flex justify-between items-center py-0 px-6 max-md:flex-col max-md:gap-2">
+            <span className="font-semibold text-gray-700">
               Overview for selected period and category-
             </span>
 
@@ -278,7 +280,7 @@ export function TransactionsList() {
             const bs = new NepaliDate(new Date(t.date)).getBS()
             return (
               <Card key={t.id}>
-                <CardContent className="p-6 flex justify-between items-center">
+                <CardContent className="p-6 flex justify-between items-center max-sm:flex-col max-sm:gap-3.5">
                   <div className="flex gap-4 items-center">
                     <div className={`w-12 h-12 rounded-full ${cat.color} flex items-center justify-center text-white`}>
                       {cat.icon}

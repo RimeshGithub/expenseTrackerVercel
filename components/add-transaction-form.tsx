@@ -174,28 +174,32 @@ export function AddTransactionForm() {
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
 
-            <div className="flex gap-2 items-center" id="date">
-              AD:
-              <Input 
-                type="date"
-                value={date}
-                required
-                onChange={(e) => setDate(e.target.value)}
-                className="w-70 shadow-sm rounded-md p-2.5 mr-2"
-              />
-              
-              BS:
-              <div onClick={() => !date && setDate(format(new Date(), "yyyy-MM-dd"))}>
-                <DatePicker               
-                  key={`${bs.year}-${bs.month}-${bs.date}`} 
-                  inputClassName="form-control"
-                  className="shadow-sm rounded-md px-2.5 py-1.5 w-70 cursor-default"
-                  defaultDate={`${bs.year}-${String(bs.month + 1).padStart(2, '0')}-${String(bs.date).padStart(2, '0')}`}
-                  onChange={(newDate) => setDate(newDate.adDate)}
-                  options={{ calenderLocale: 'ne', valueLocale: 'en' }}
-                  hideDefaultValue={!date}
+            <div className="flex gap-2 items-center max-md:flex-col max-md:items-start" id="date">
+              <label className="flex gap-2 items-center">
+                AD:
+                <Input 
+                  type="date"
+                  value={date}
+                  required
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-70 shadow-sm rounded-md p-2.5 mr-2"
                 />
-              </div>             
+              </label>
+              
+              <label className="flex gap-2 items-center">
+                BS:
+                <div onClick={() => !date && setDate(format(new Date(), "yyyy-MM-dd"))}>
+                  <DatePicker               
+                    key={`${bs.year}-${bs.month}-${bs.date}`} 
+                    inputClassName="form-control"
+                    className="shadow-sm rounded-md px-2.5 py-1.5 w-70 cursor-default"
+                    defaultDate={`${bs.year}-${String(bs.month + 1).padStart(2, '0')}-${String(bs.date).padStart(2, '0')}`}
+                    onChange={(newDate) => setDate(newDate.adDate)}
+                    options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                    hideDefaultValue={!date}
+                  />
+                </div>  
+              </label>           
             </div>
           </div>
 

@@ -216,7 +216,7 @@ export function AnalyticsDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-4 max-sm:items-start">
         <div>
           <h1 className="text-3xl font-bold">Analytics</h1>
           <p className="text-muted-foreground">Detailed insights into your financial patterns and trends.</p>
@@ -300,7 +300,7 @@ export function AnalyticsDashboard() {
           <TabsTrigger value="trends">Trends</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4">
+        <TabsContent value="overview" className="space-y-4 max-md:pr-220">
           <div className="grid gap-4 md:grid-cols-1">
             <Card className="flex items-center">
               <CardHeader className="w-full">
@@ -350,7 +350,7 @@ export function AnalyticsDashboard() {
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-1">
+          <div className="grid gap-4 md:grid-cols-1 max-md:pr-160">
             <Card className="flex items-center">
               <CardHeader className="w-full">
                 <CardTitle>Expense Categories</CardTitle>
@@ -451,16 +451,18 @@ export function AnalyticsDashboard() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="trends" className="space-y-4">
-          <Card className="flex items-center">
-            <CardHeader className="w-full">
-              <CardTitle>Financial Trends</CardTitle>
-              <CardDescription>Track your financial patterns over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TrendChart type={calendarType} data={monthlyTrend} />
-            </CardContent>
-          </Card>
+        <TabsContent value="trends" className="space-y-4 max-md:pr-220">
+          <div className="grid gap-4 md:grid-cols-1">
+            <Card className="flex items-center">
+              <CardHeader className="w-full">
+                <CardTitle>Financial Trends</CardTitle>
+                <CardDescription>Track your financial patterns over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TrendChart type={calendarType} data={monthlyTrend} />
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
