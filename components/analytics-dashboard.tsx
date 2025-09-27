@@ -11,7 +11,7 @@ import { IncomeVsExpenseChart } from "./income-vs-expense-chart"
 import { useTransactions } from "@/hooks/use-transactions"
 import { TrendingUp, TrendingDown, Wallet, PieChart } from "lucide-react"
 import NepaliDate from "nepali-date-converter"
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/types"
+import { useCategories } from "@/lib/categories-list"
 import { start } from "repl"
 
 // helper: get start date for selected time range
@@ -33,6 +33,7 @@ export function AnalyticsDashboard() {
   const [timeRange, setTimeRange] = useState("3months")
   const [calendarType, setCalendarType] = useState<"ad" | "bs">("ad")
   const { transactions, loading } = useTransactions()
+  const { expenseCategories, incomeCategories } = useCategories()
 
   // --- FILTER transactions ---
   const now = new Date()
@@ -87,7 +88,7 @@ export function AnalyticsDashboard() {
   }
 
   const incomeCategoryBreakdown = Object.entries(incomeCategoryMap).map(([categoryId, amount]) => {
-    const catInfo = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].find((c) => c.id === categoryId)
+    const catInfo = [...expenseCategories, ...incomeCategories].find((c) => c.id === categoryId)
     return {
       category: catInfo?.name || categoryId,
       amount,
@@ -96,7 +97,7 @@ export function AnalyticsDashboard() {
   })
 
   const expenseCategoryBreakdown = Object.entries(expenseCategoryMap).map(([categoryId, amount]) => {
-    const catInfo = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].find((c) => c.id === categoryId)
+    const catInfo = [...expenseCategories, ...incomeCategories].find((c) => c.id === categoryId)
     return {
       category: catInfo?.name || categoryId,
       amount,
@@ -105,7 +106,7 @@ export function AnalyticsDashboard() {
   })
 
   const categoryBreakdown = Object.entries(categoryMap).map(([categoryId, amount]) => {
-    const catInfo = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].find((c) => c.id === categoryId)
+    const catInfo = [...expenseCategories, ...incomeCategories].find((c) => c.id === categoryId)
     return {
       category: catInfo?.name || categoryId,
       amount,
@@ -114,14 +115,14 @@ export function AnalyticsDashboard() {
   })
 
   // top categories (by expense only)
-  const expenseCategories = filteredTransactions.filter((t) => t.type === "expense")
-  const expenseTotals = expenseCategories.reduce((acc, t) => {
+  const expenseCategoriesTop = filteredTransactions.filter((t) => t.type === "expense")
+  const expenseTotals = expenseCategoriesTop.reduce((acc, t) => {
     acc[t.category] = (acc[t.category] || 0) + t.amount
     return acc
   }, {} as Record<string, number>)
   const topCategoriesExpense = Object.entries(expenseTotals)
     .map(([categoryId, amount]) => {
-      const catInfo = EXPENSE_CATEGORIES.find((c) => c.id === categoryId)
+      const catInfo = expenseCategories.find((c) => c.id === categoryId)
       const percentage = totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0
       return {
         category: catInfo?.name || categoryId,
@@ -133,14 +134,14 @@ export function AnalyticsDashboard() {
     .slice(0, 5)
 
   // top categories (by income only)
-  const incomeCategories = filteredTransactions.filter((t) => t.type === "income")
-  const incomeTotals = incomeCategories.reduce((acc, t) => {
+  const incomeCategoriesTop = filteredTransactions.filter((t) => t.type === "income")
+  const incomeTotals = incomeCategoriesTop.reduce((acc, t) => {
     acc[t.category] = (acc[t.category] || 0) + t.amount
     return acc
   }, {} as Record<string, number>)
   const topCategoriesIncome = Object.entries(incomeTotals)
     .map(([categoryId, amount]) => {
-      const catInfo = INCOME_CATEGORIES.find((c) => c.id === categoryId)
+      const catInfo = incomeCategories.find((c) => c.id === categoryId)
       const percentage = totalIncome > 0 ? (amount / totalIncome) * 100 : 0
       return {
         category: catInfo?.name || categoryId,
@@ -451,7 +452,7 @@ export function AnalyticsDashboard() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="trends" className="space-y-4 max-md:pr-220">
+        <TabsContent value="trends" className="space-y-4 max-md:pr-220 mb-5">
           <div className="grid gap-4 md:grid-cols-1">
             <Card className="flex items-center">
               <CardHeader className="w-full">

@@ -11,12 +11,14 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { type Transaction, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/types"
+import { type Transaction } from "@/lib/types"
+import { useCategories } from "@/lib/categories-list"
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Calendar } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { EditTransactionForm } from "./edit-transaction-form"
 import NepaliDate from "nepali-date-converter"
+import { ca } from "date-fns/locale"
 
 export function TransactionsList() {
   const { transactions, loading, deleteTransaction } = useTransactions()
@@ -33,6 +35,8 @@ export function TransactionsList() {
   const [filterMonth, setFilterMonth] = useState("all")
 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+
+  const { expenseCategories, incomeCategories } = useCategories()
 
   // Month names
   const adMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -112,7 +116,7 @@ export function TransactionsList() {
   }, [useBSDate])
 
   const getCategoryInfo = (categoryId: string, type: "expense" | "income") => {
-    const categories = type === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES
+    const categories = type === "expense" ? expenseCategories : incomeCategories
     return categories.find((c) => c.id === categoryId) || { name: categoryId, icon: "📦", color: "bg-gray-500" }
   }
 
@@ -124,7 +128,7 @@ export function TransactionsList() {
     }
   }
 
-  const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES]
+  const allCategories = [...expenseCategories, ...incomeCategories]
 
   return (
     <div className="space-y-6">
@@ -144,7 +148,7 @@ export function TransactionsList() {
       {/* Filters */}
       <Card>
         <CardContent className="px-3">
-          <div className="flex gap-2.5 mb-4 bg-white p-1.5 rounded-md max-md:flex-col max-md:gap-2">
+          <div className="flex gap-2.5 mb-4 bg-white p-1.5 rounded-md max-md:flex-col max-md:gap-2 max-sm:items-center">
             {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -193,10 +197,10 @@ export function TransactionsList() {
             </label>       
           </div>
           
-          <div className="flex gap-10 bg-white p-1.5 rounded-md max-md:justify-between max-md:gap-2">
+          <div className="flex gap-10 bg-white px-1.5 py-3 rounded-md max-sm:flex-col max-sm:gap-4 items-center justify-center max-md:justify-between">
             {/* Calendar Type Toggle */}
-            <div className="flex items-center space-x-2 bg-muted/50 px-3 rounded-md">
-              <Label htmlFor="calendar-toggle" className="whitespace-nowrap max-sm:text-[12px]">
+            <div className="flex items-center space-x-2 bg-muted/50 px-0 rounded-md">
+              <Label htmlFor="calendar-toggle" className="whitespace-nowrap">
                 Filter in AD
               </Label>
               <Switch
@@ -204,14 +208,14 @@ export function TransactionsList() {
                 checked={useBSDate}
                 onCheckedChange={setUseBSDate}
               />
-              <Label htmlFor="calendar-toggle" className="whitespace-nowrap max-sm:text-[12px]">
+              <Label htmlFor="calendar-toggle" className="whitespace-nowrap">
                 Filter in BS
               </Label>
             </div>
             
             <div className="flex gap-2.5 max-md:flex-col max-md:gap-2 max-sm:text-sm">
               {/* Year Filter */}
-              <label className="flex items-center gap-0.5">Year:
+              <label className="flex items-center gap-1">Year:
                 <Select value={filterYear} onValueChange={setFilterYear}>
                   <SelectTrigger className="w-[120px]">
                     <SelectValue placeholder={`${useBSDate ? 'BS' : 'AD'} Year`} />
@@ -226,7 +230,7 @@ export function TransactionsList() {
               </label>
 
               {/* Month Filter */}
-              <label className="flex items-center gap-0.5">Month:
+              <label className="flex items-center gap-1">Month:
                 <Select value={filterMonth} onValueChange={setFilterMonth}>
                   <SelectTrigger className="w-[140px]">
                     <SelectValue placeholder="Month" />
@@ -247,22 +251,34 @@ export function TransactionsList() {
       {/* Overview */}
       <div className="space-y-4 max-md:text-sm">
         <Card className="bg-gradient-to-r from-gray-50 to-gray-100 shadow-sm border">
-          <CardContent className="flex justify-between items-center py-0 px-6 max-md:flex-col max-md:gap-2">
+          <CardContent className="flex justify-between items-center py-0 px-6 max-2xl:flex-col gap-2.5">
             <span className="font-semibold text-gray-700">
               Overview for selected period and category-
             </span>
 
-            <div className="flex gap-6">
-              <div className="flex items-center gap-2">
+            <div className="flex gap-6 max-md:flex-wrap max-md:gap-2 max-md:justify-center">
+              {((filterType === "all" && [...incomeCategories.map(cat => cat.id), "all"].includes(filterCategory)) || filterType === "income") && <div className="flex items-center gap-1">
                 <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                 <span className="font-semibold text-green-600">
                   Income: Rs {incomeDisp}
                 </span>
-              </div>
-              <div className="flex items-center gap-2">
+              </div>}
+              {((filterType === "all" && [...expenseCategories.map(cat => cat.id), "all"].includes(filterCategory)) || filterType === "expense") && <div className="flex items-center gap-1">
                 <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
                 <span className="font-semibold text-red-600">
                   Expense: Rs {expenseDisp}
+                </span>
+              </div>}
+              {(filterType === "all" && filterCategory === "all") && <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <span className="font-semibold text-yellow-600">
+                  Balance: Rs {incomeDisp - expenseDisp}
+                </span>
+              </div>}
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded-full bg-gray-500"></div>
+                <span className="font-semibold text-gray-600">
+                  Transactions: {filteredTransactions.length}
                 </span>
               </div>
             </div>
@@ -282,7 +298,7 @@ export function TransactionsList() {
               <Card key={t.id}>
                 <CardContent className="p-6 flex justify-between items-center max-sm:flex-col max-sm:gap-3.5">
                   <div className="flex gap-4 items-center">
-                    <div className={`w-12 h-12 rounded-full ${cat.color} flex items-center justify-center text-white`}>
+                    <div className={`w-12 h-12 rounded-full ${cat.color} flex items-center justify-center text-black font-bold`}>
                       {cat.icon}
                     </div>
                     <div>
@@ -303,10 +319,10 @@ export function TransactionsList() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => setEditingTransaction(t)}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
+                          <Edit className="mr-2 h-4 w-4 hover:text-white" /> Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDelete(t.id)} className="text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                          <Trash2 className="mr-2 h-4 w-4 hover:text-white" /> Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

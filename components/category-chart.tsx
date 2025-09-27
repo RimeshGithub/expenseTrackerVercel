@@ -2,7 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { EXPENSE_CATEGORIES } from "@/lib/types"
+import { useCategories } from "@/lib/categories-list"
 
 interface CategoryChartProps {
   data: Array<{ category: string; amount: number; color: string }>
@@ -47,7 +47,8 @@ export function CategoryChart({ data, category }: CategoryChartProps) {
     "#7f1d1d"  // red-900
   ]
 
-  const expenseCategories = EXPENSE_CATEGORIES.map((c) => c.name)
+  const { expenseCategories } = useCategories()
+  const expenseCategoryNames = expenseCategories.map((c) => c.name)
     
   const chartConfig = data.reduce(
     (config, item, index) => ({
@@ -75,7 +76,7 @@ export function CategoryChart({ data, category }: CategoryChartProps) {
             dataKey="amount"
           >
             {data.map((entry, index) => {
-              const palette = category !== "all" ? colors : (expenseCategories.includes(entry.category) ? expenseColors : incomeColors)
+              const palette = category !== "all" ? colors : (expenseCategoryNames.includes(entry.category) ? expenseColors : incomeColors)
               return <Cell key={`cell-${index}`} fill={palette[index % palette.length]} />
             })}
           </Pie>

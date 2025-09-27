@@ -13,17 +13,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/types"
+import { useCategories } from "@/lib/categories-list"
 import { Loader2, Plus } from "lucide-react"
-import { format } from "date-fns"
+import { format, set } from "date-fns"
 import DatePicker from '@sbmdkl/nepali-datepicker-reactjs'
 import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css'
 import NepaliDate from "nepali-date-converter"
+import { Category } from "@/lib/types"
 
 export function AddTransactionForm() {
   const [type, setType] = useState<"expense" | "income">("expense")
   const [amount, setAmount] = useState("")
+  const [categoryData, setCategoryData] = useState<Category | null>(null)
   const [category, setCategory] = useState("")
+  const [categoryName, setCategoryName] = useState("")
   const [description, setDescription] = useState("")
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"))
   const [loading, setLoading] = useState(false)
@@ -31,9 +34,10 @@ export function AddTransactionForm() {
   const [success, setSuccess] = useState("")
 
   const { addTransaction } = useTransactions()
+  const { expenseCategories, incomeCategories } = useCategories()
   const router = useRouter()
 
-  const categories = type === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES
+  const categories = type === "expense" ? expenseCategories : incomeCategories
   const bs = date ? new NepaliDate(new Date(date)).getBS() : ""
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,7 +45,7 @@ export function AddTransactionForm() {
     setError("")
     setSuccess("")
 
-    if (!amount || !category || !date) {
+    if (!amount || !categoryData || !date) {
       setError("Please fill in all fields")
       return
     }
@@ -58,6 +62,7 @@ export function AddTransactionForm() {
         type,
         amount: Number.parseFloat(amount),
         category,
+        categoryName,
         description,
         date,
       })
@@ -68,6 +73,7 @@ export function AddTransactionForm() {
       setAmount("")
       setCategory("")
       setDescription("")
+      setCategoryData(null)
       setDate(format(new Date(), "yyyy-MM-dd"))
 
       setTimeout(() => {
@@ -105,7 +111,7 @@ export function AddTransactionForm() {
             value={type}
             onValueChange={(value) => {
               setType(value as "expense" | "income")
-              setCategory("") // Reset category when type changes
+              setCategoryData(null) // Reset category when type changes
             }}
           >
             <TabsList className="grid w-full grid-cols-2 gap-1">
@@ -125,6 +131,7 @@ export function AddTransactionForm() {
               id="amount"
               type="number"
               autoComplete="off"
+              onWheel={(e) => e.target.blur()}
               step="1"
               placeholder="0"
               value={amount}
@@ -138,15 +145,37 @@ export function AddTransactionForm() {
           {/* Category */}
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Select value={category} onValueChange={setCategory} required disabled={loading}>
+            <Select
+              value={categoryData ? JSON.stringify(categoryData) : ""}
+              onValueChange={(val) => {
+                if (!val) {
+                  // nothing selected
+                  setCategoryData(null)
+                  return
+                }
+
+                try {
+                  const parsed = JSON.parse(val) as Category
+                  setCategoryData(parsed)
+                  setCategory(parsed.id)
+                  setCategoryName(parsed.name)
+                } catch (e) {
+                  console.error("Failed to parse category:", e)
+                }
+              }}
+            >
               <SelectTrigger className="shadow-sm rounded-md p-2.5">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
+
               <SelectContent>
                 {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
+                  <SelectItem
+                    key={cat.id}
+                    value={JSON.stringify({ id: cat.id, name: cat.name })}
+                  >
                     <div className="flex items-center gap-2">
-                      <span>{cat.icon}</span>
+                      <span className="w-5 text-center font-bold overflow-hidden">{cat.icon}</span>
                       <span>{cat.name}</span>
                     </div>
                   </SelectItem>
@@ -218,9 +247,9 @@ export function AddTransactionForm() {
                 </>
               )}
             </Button>
-            <Button type="button" variant="outline" onClick={() => router.push("/dashboard")} disabled={loading}>
+            {/* <Button type="button" variant="outline" onClick={() => router.push("/dashboard")} disabled={loading}>
               Cancel
-            </Button>
+            </Button> */}
           </div>
         </form>
       </CardContent>

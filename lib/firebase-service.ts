@@ -1,4 +1,4 @@
-// Firebase service for real-time data operations
+// Firebase service for real-time data operations with error handling
 import {
   collection,
   addDoc,
@@ -12,16 +12,25 @@ import {
   getDocs,
   Timestamp,
 } from "firebase/firestore"
-import { db } from "./firebase"
-import type { Transaction } from "./types"
+import { getFirebaseDB } from "./firebase"
+import type { Transaction, CustomCategory } from "./types"
 
 export class FirebaseService {
+  private static checkDatabase() {
+    const db = getFirebaseDB()
+    if (!db) {
+      throw new Error("Firestore is not available. Please check your Firebase configuration.")
+    }
+    return db
+  }
+
   // Add a new transaction
   static async addTransaction(
     userId: string,
     transaction: Omit<Transaction, "id" | "userId" | "createdAt" | "updatedAt">,
   ) {
     try {
+      const db = this.checkDatabase()
       const docRef = await addDoc(collection(db, "transactions"), {
         ...transaction,
         userId,
@@ -38,6 +47,7 @@ export class FirebaseService {
   // Update an existing transaction
   static async updateTransaction(transactionId: string, updates: Partial<Transaction>) {
     try {
+      const db = this.checkDatabase()
       const transactionRef = doc(db, "transactions", transactionId)
       await updateDoc(transactionRef, {
         ...updates,
@@ -52,6 +62,7 @@ export class FirebaseService {
   // Delete a transaction
   static async deleteTransaction(transactionId: string) {
     try {
+      const db = this.checkDatabase()
       await deleteDoc(doc(db, "transactions", transactionId))
     } catch (error) {
       console.error("Error deleting transaction:", error)
@@ -62,6 +73,7 @@ export class FirebaseService {
   // Get transactions for a user (one-time fetch)
   static async getTransactions(userId: string): Promise<Transaction[]> {
     try {
+      const db = this.checkDatabase()
       const q = query(collection(db, "transactions"), where("userId", "==", userId), orderBy("date", "desc"))
       const querySnapshot = await getDocs(q)
       return querySnapshot.docs.map((doc) => ({
@@ -78,14 +90,15 @@ export class FirebaseService {
 
   // Subscribe to real-time transaction updates
   static subscribeToTransactions(userId: string, callback: (transactions: Transaction[]) => void) {
+    const db = this.checkDatabase()
     const q = query(collection(db, "transactions"), where("userId", "==", userId), orderBy("date", "desc"))
 
     return onSnapshot(
       q,
       (querySnapshot) => {
         const transactions = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
           ...doc.data(),
+          id: doc.id,
           createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
           updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
         })) as Transaction[]
@@ -94,77 +107,98 @@ export class FirebaseService {
       },
       (error) => {
         console.error("Error in transaction subscription:", error)
+        callback([])
       },
     )
   }
 
-  // Calculate analytics data from transactions
-  static calculateAnalytics(transactions: Transaction[]) {
-    const currentMonth = new Date().getMonth()
-    const currentYear = new Date().getFullYear()
-
-    // Filter transactions for current month
-    const currentMonthTransactions = transactions.filter((t) => {
-      const transactionDate = new Date(t.date)
-      return transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear
-    })
-
-    const totalIncome = currentMonthTransactions
-      .filter((t) => t.type === "income")
-      .reduce((sum, t) => sum + t.amount, 0)
-
-    const totalExpenses = currentMonthTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((sum, t) => sum + t.amount, 0)
-
-    const balance = totalIncome - totalExpenses
-
-    // Category breakdown
-    const categoryBreakdown: { [key: string]: number } = {}
-    currentMonthTransactions
-      .filter((t) => t.type === "expense")
-      .forEach((t) => {
-        categoryBreakdown[t.category] = (categoryBreakdown[t.category] || 0) + t.amount
+  // Add a new category
+  static async addCategory(userId: string, name: string, icon: string, type: "income" | "expense") {
+    try {
+      const db = this.checkDatabase()
+      const docRef = await addDoc(collection(db, "categories"), {
+        name: name.trim(),
+        icon: icon === "" ? name.trim().charAt(0).toUpperCase() : icon,
+        type,                        // <-- store category type
+        userId,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
       })
-
-    return {
-      totalIncome,
-      totalExpenses,
-      balance,
-      categoryBreakdown,
+      return docRef.id
+    } catch (error) {
+      console.error("Error adding category:", error)
+      throw error
     }
   }
 
-  // Get monthly trend data
-  static getMonthlyTrend(transactions: Transaction[], months = 6) {
-    const monthlyData: { [key: string]: { income: number; expenses: number } } = {}
-
-    // Initialize last N months
-    for (let i = months - 1; i >= 0; i--) {
-      const date = new Date()
-      date.setMonth(date.getMonth() - i)
-      const monthKey = date.toLocaleDateString("en-US", { month: "short" })
-      monthlyData[monthKey] = { income: 0, expenses: 0 }
+  // Update an existing category
+  static async updateCategory(
+    categoryId: string,
+    updates: Partial<Omit<CustomCategory, "id" | "userId">>
+  ) {
+    try {
+      const db = this.checkDatabase()
+      const categoryRef = doc(db, "categories", categoryId)
+      await updateDoc(categoryRef, {
+        ...updates,
+        updatedAt: Timestamp.now(),
+      })
+    } catch (error) {
+      console.error("Error updating category:", error)
+      throw error
     }
+  }
 
-    // Aggregate transactions by month
-    transactions.forEach((transaction) => {
-      const transactionDate = new Date(transaction.date)
-      const monthKey = transactionDate.toLocaleDateString("en-US", { month: "short" })
+  // Delete a category
+  static async deleteCategory(categoryId: string) {
+    try {
+      const db = this.checkDatabase()
+      await deleteDoc(doc(db, "categories", categoryId))
+    } catch (error) {
+      console.error("Error deleting category:", error)
+      throw error
+    }
+  }
 
-      if (monthlyData[monthKey]) {
-        if (transaction.type === "income") {
-          monthlyData[monthKey].income += transaction.amount
-        } else {
-          monthlyData[monthKey].expenses += transaction.amount
-        }
+  // Get all categories for a user
+  static async getCategories(userId: string): Promise<CustomCategory[]> {
+    try {
+      const db = this.checkDatabase()
+      const q = query(collection(db, "categories"), where("userId", "==", userId))
+      const snapshot = await getDocs(q)
+
+      return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+      })) as CustomCategory[]
+    } catch (error) {
+      console.error("Error fetching categories:", error)
+      throw error
+    }
+  }
+
+  // Real-time subscription to categories
+  static subscribeToCategories(userId: string, callback: (categories: CustomCategory[]) => void) {
+    const db = this.checkDatabase()
+    const q = query(collection(db, "categories"), where("userId", "==", userId), orderBy("createdAt", "desc"))
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const categories = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+          updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        })) as CustomCategory[]
+        callback(categories)
+      },
+      (error) => {
+        console.error("Error in category subscription:", error)
+        callback([])
       }
-    })
-
-    return Object.entries(monthlyData).map(([month, data]) => ({
-      month,
-      income: data.income,
-      expenses: data.expenses,
-    }))
+    )
   }
 }

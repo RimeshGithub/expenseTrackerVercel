@@ -68,10 +68,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="px-2.5 py-4 border-t">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-            <span className="text-sm font-medium text-primary-foreground">{user?.email?.charAt(0).toUpperCase()}</span>
+            <span className="text-sm font-medium text-primary-foreground">{user?.displayName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()}</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.email}</p>
+          <div>
+            <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{user?.displayName}</p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`text-${user?.displayName ? "xs" : "sm"} font-medium truncate`}>{user?.email}</p>
+            </div>
           </div>
         </div>
         <Button

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Plus, TrendingUp, TrendingDown, Wallet, Calendar } from "lucide-react"
 import Link from "next/link"
 import { useTransactions } from "@/hooks/use-transactions"
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/types"
+import { useCategories } from "@/lib/categories-list"
+import { useAuth } from "@/lib/auth-context"
 import { format } from "date-fns"
 import NepaliDate from "nepali-date-converter"
 import { useState } from "react"
@@ -13,6 +14,9 @@ import { useState } from "react"
 export function DashboardOverview() {
   const { transactions, loading } = useTransactions()
   const [calendarMode, setCalendarMode] = useState<"ad" | "bs">("ad")
+
+  const { expenseCategories, incomeCategories } = useCategories()
+  const { user } = useAuth()
 
   const now = new Date()
   const currentADMonth = now.getMonth()
@@ -54,7 +58,7 @@ export function DashboardOverview() {
   }, {} as Record<string, number>)
 
   const categoryBreakdown = Object.entries(categoryBreakdownObj).map(([categoryId, amount]) => {
-    const categoryInfo = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].find(
+    const categoryInfo = [...expenseCategories, ...incomeCategories].find(
       (cat) => cat.id === categoryId
     )
     return {
@@ -68,7 +72,7 @@ export function DashboardOverview() {
   const recentTransactions = filteredTransactions.slice(0, 5)
 
   const getCategoryInfo = (categoryId: string, type: "expense" | "income") => {
-    const categories = type === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES
+    const categories = type === "expense" ? expenseCategories : incomeCategories
     return categories.find((cat) => cat.id === categoryId) || {
       name: categoryId,
       icon: "📦",
@@ -104,10 +108,10 @@ export function DashboardOverview() {
       <div className="flex items-center justify-between max-md:flex-col max-md:gap-4 max-md:items-start">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mr-3">
             {calendarMode === "ad"
-              ? `Financial overview for ${format(new Date(), "MMMM yyyy")} AD.`
-              : `Financial overview for ${BSmonths[currentBSMonth]} ${currentBSYear} BS.`}
+              ? `Welcome ${user?.displayName? user.displayName : "User"}, The following is your Financial overview for ${format(new Date(), "MMMM yyyy")} AD.`
+              : `Welcome ${user?.displayName? user.displayName : "User"}, The following is your Financial overview for ${BSmonths[currentBSMonth]} ${currentBSYear} BS.`}
           </p>
         </div>
         <div className="flex items-center gap-2">
