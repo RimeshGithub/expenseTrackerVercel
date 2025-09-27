@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <link rel="manifest" href="/manifest.webmanifest" />
-      <link rel="icon" href="/icons/favicon2.ico" />
+      <link rel="icon" href="/icons/favicon.ico" />
       <body className="font-sans antialiased">
         <Suspense fallback={<div>Loading...</div>}>
           <AuthProvider>

@@ -203,7 +203,7 @@ export function DashboardOverview() {
                 recentTransactions.map((transaction) => {
                   const categoryInfo = getCategoryInfo(transaction.category, transaction.type)
                   return (
-                    <div key={transaction.id} className="flex items-center justify-between">
+                    <div key={transaction.id} className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-2 h-2 rounded-full ${
@@ -212,11 +212,11 @@ export function DashboardOverview() {
                         />
                         <div>
                           <p className="font-medium">{categoryInfo.name}</p>
-                          <p className="text-sm text-muted-foreground">{transaction.description}</p>
+                          <p className="text-sm text-muted-foreground max-w-[300px]">{transaction.description}</p>
                         </div>
                       </div>
                       <div
-                        className={`font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
+                        className={`font-medium whitespace-nowrap ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
                       >
                         {transaction.type === "income" ? "+" : "-"} Rs {transaction.amount}
                       </div>

@@ -31,10 +31,14 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+          <div className="text-4xl md:text-6xl font-bold text-foreground mb-10 flex items-center justify-center gap-5">
+            <TrendingUp className="h-15 w-15 text-primary" />
+            <span className="font-bold">ExpenseTracker</span>
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-6">
             Track Your <span className="text-primary">Expenses</span> Smartly
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-md md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Take control of your finances with our modern expense tracker. Categorize spending, visualize trends, and
             achieve your financial goals.
           </p>
@@ -105,7 +109,7 @@ export default function HomePage() {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Take Control of Your Finances?</h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-md md:text-xl text-muted-foreground mb-8">
             Join thousands of users who are already managing their expenses smarter.
           </p>
           <Button asChild size="lg" className="text-lg px-8">
