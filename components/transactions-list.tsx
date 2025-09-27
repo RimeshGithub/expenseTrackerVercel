@@ -297,17 +297,19 @@ export function TransactionsList() {
             return (
               <Card key={t.id}>
                 <CardContent className="p-6 flex justify-between items-center max-sm:flex-col max-sm:gap-3.5">
-                  <div className="flex gap-4 items-center">
-                    <div className={`w-12 h-12 rounded-full ${cat.color} flex items-center justify-center text-black font-bold`}>
-                      {cat.icon}
-                    </div>
-                    <div>
-                      <Badge variant={t.type === "income" ? "default" : "secondary"}>{cat.name}</Badge>
-                      <div className="text-xs mt-1 text-muted-foreground">
-                        {format(new Date(t.date), "MMM dd, yyyy")} AD | {bsMonths[bs.month]} {bs.date}, {bs.year} BS
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-full ${cat.color} flex items-center justify-center text-black font-bold`}>
+                        {cat.icon}
                       </div>
-                      {t.description && <p className="text-sm mt-2">{t.description}</p>}
+                      <div>
+                        <Badge variant={t.type === "income" ? "default" : "secondary"}>{cat.name}</Badge>
+                        <div className="text-xs mt-1 text-muted-foreground">
+                          {format(new Date(t.date), "MMM dd, yyyy")} AD | {bsMonths[bs.month]} {bs.date}, {bs.year} BS
+                        </div>
+                      </div>
                     </div>
+                    {t.description && <p className="text-sm mt-2 px-3">{t.description}</p>}
                   </div>
                   <div className="flex items-center gap-2">
                     <div className={`font-bold ${t.type === "income" ? "text-green-600" : "text-red-600"}`}>
