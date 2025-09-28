@@ -70,7 +70,7 @@ export function TransactionsList() {
       filtered = filtered.filter(
         (t) =>
           t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          t.category.toLowerCase().includes(searchTerm.toLowerCase())
+          t.categoryName.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 

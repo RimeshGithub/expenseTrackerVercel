@@ -56,7 +56,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="py-20 px-4 bg-muted/50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose Our Expense Tracker?</h2>
+          <h2 className="text-3xl max-md:text-2xl font-bold text-center mb-12">Why Choose Our Expense Tracker?</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card>
               <CardHeader>
@@ -108,7 +108,7 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Take Control of Your Finances?</h2>
+          <h2 className="text-3xl max-md:text-2xl font-bold mb-6">Ready to Take Control of Your Finances?</h2>
           <p className="text-md md:text-xl text-muted-foreground mb-8">
             Join thousands of users who are already managing their expenses smarter.
           </p>
