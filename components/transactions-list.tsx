@@ -366,15 +366,15 @@ export function TransactionsList() {
                         : "from-amber-500 to-red-500"
                     } transition-all duration-500`}
                     style={{
-                      width: `${Math.min(100, (expenseDisp / incomeDisp) * 50)}%`
+                      width: `${Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100)}%`
                     }}
                   />
                 </div>
 
                 {/* Footer stats */}
                 <div className="mt-2 flex justify-between text-xs text-gray-600">
-                  <span>Expense: Rs {expenseDisp} ({Math.min(100, (expenseDisp / incomeDisp) * 50).toFixed(1)}%)</span>
-                  <span>Income: Rs {incomeDisp} ({(100 - Math.min(100, (expenseDisp / incomeDisp) * 50)).toFixed(1)}%)</span>
+                  <span>Expense: Rs {expenseDisp} ({Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100).toFixed(1)}%)</span>
+                  <span>Income: Rs {incomeDisp} ({(100 - Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100)).toFixed(1)}%)</span>
                 </div>
               </div>
             )}
