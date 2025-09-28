@@ -72,7 +72,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
           <div>
             <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.displayName}</p>
+            <p className="text-sm font-bold truncate">{user?.displayName}</p>
             </div>
             <div className="flex-1 min-w-0">
               <p className={`text-${user?.displayName ? "xs" : "sm"} font-medium truncate`}>{user?.email}</p>

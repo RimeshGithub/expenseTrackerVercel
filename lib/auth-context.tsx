@@ -9,6 +9,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  updateProfile,
 } from "firebase/auth"
 import { getFirebaseAuth, isFirebaseInitialized, getFirebaseError } from "./firebase"
 
@@ -62,12 +63,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signInWithEmailAndPassword(auth, email, password)
   }
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, displayName?: string) => {
     const auth = getFirebaseAuth()
     if (!auth) {
       throw new Error("Firebase Auth not available. Please check your configuration.")
     }
-    await createUserWithEmailAndPassword(auth, email, password)
+
+    // Create the user account
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    const user = userCredential.user
+
+    // Update display name if provided
+    if (user && displayName) {
+      await updateProfile(user, { displayName })
+    }
   }
 
   const logout = async () => {

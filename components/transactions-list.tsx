@@ -18,6 +18,7 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { EditTransactionForm } from "./edit-transaction-form"
 import NepaliDate from "nepali-date-converter"
+import { TrendingUp } from "lucide-react"
 import { ca } from "date-fns/locale"
 
 export function TransactionsList() {
@@ -29,10 +30,18 @@ export function TransactionsList() {
   const [filterType, setFilterType] = useState<"all" | "expense" | "income">("all")
   const [filterCategory, setFilterCategory] = useState("all")
 
+  // Get today's date
+  const today = new Date()
+  const todayADYear = today.getFullYear()
+  const todayADMonth = today.getMonth() // 0-based index
+  const todayBS = new NepaliDate(today).getBS()
+  const todayBSYear = todayBS.year
+  const todayBSMonth = todayBS.month
+
   // Date filter state
   const [useBSDate, setUseBSDate] = useState(false) // Toggle between AD/BS
-  const [filterYear, setFilterYear] = useState("all")
-  const [filterMonth, setFilterMonth] = useState("all")
+  const [filterYear, setFilterYear] = useState(todayADYear.toString())
+  const [filterMonth, setFilterMonth] = useState(todayADMonth.toString())
 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
 
@@ -111,8 +120,13 @@ export function TransactionsList() {
 
   // Reset date filters when switching calendar type
   useEffect(() => {
-    setFilterYear("all")
-    setFilterMonth("all")
+    if (useBSDate) {
+      setFilterYear(todayBSYear.toString())
+      setFilterMonth(todayBSMonth.toString())
+    } else {
+      setFilterYear(todayADYear.toString())
+      setFilterMonth(todayADMonth.toString())
+    }
   }, [useBSDate])
 
   const getCategoryInfo = (categoryId: string, type: "expense" | "income") => {
@@ -148,7 +162,7 @@ export function TransactionsList() {
       {/* Filters */}
       <Card>
         <CardContent className="px-3">
-          <div className="flex gap-2.5 mb-4 bg-white p-1.5 rounded-md max-md:flex-col max-md:gap-2 max-sm:items-center">
+          <div className="flex gap-2.5 mb-4 bg-white p-1.5 rounded-md max-md:flex-col max-md:gap-2 max-md:items-center">
             {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -182,14 +196,28 @@ export function TransactionsList() {
                   <SelectItem value="all">🏷️ All Categories</SelectItem>
                   {allCategories.map((category) => { 
                     if (filterType === "expense" && category.type === "expense") 
-                    {return ( 
-                      <SelectItem key={category.id} value={category.id}> {category.icon} {category.name} </SelectItem> 
+                    {return ( <SelectItem key={category.id} value={category.id}>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 text-center font-bold overflow-hidden">{category.icon}</span>
+                        <span>{category.name}</span>
+                      </div>
+                    </SelectItem> 
                     )} 
                     else if (filterType === "income" && category.type === "income") 
-                    {return ( <SelectItem key={category.id} value={category.id}> {category.icon} {category.name} </SelectItem> 
+                    {return ( <SelectItem key={category.id} value={category.id}>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 text-center font-bold overflow-hidden">{category.icon}</span>
+                        <span>{category.name}</span>
+                      </div>
+                    </SelectItem> 
                     )} 
                     else if (filterType === "all") 
-                    {return ( <SelectItem key={category.id} value={category.id}> {category.icon} {category.name} </SelectItem>                
+                    {return ( <SelectItem key={category.id} value={category.id}>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 text-center font-bold overflow-hidden">{category.icon}</span>
+                        <span>{category.name}</span>
+                      </div>
+                    </SelectItem>                
                     )} 
                   })}
                 </SelectContent>
@@ -213,7 +241,7 @@ export function TransactionsList() {
               </Label>
             </div>
             
-            <div className="flex gap-2.5 max-md:flex-col max-md:gap-2 max-sm:text-sm">
+            <div className="flex gap-2.5 max-md:flex-col max-md:gap-2 max-sm:text-sm max-sm:items-center">
               {/* Year Filter */}
               <label className="flex items-center gap-1">Year:
                 <Select value={filterYear} onValueChange={setFilterYear}>
@@ -249,39 +277,107 @@ export function TransactionsList() {
       </Card>
       
       {/* Overview */}
-      <div className="space-y-4 max-md:text-sm">
-        <Card className="bg-gradient-to-r from-gray-50 to-gray-100 shadow-sm border">
-          <CardContent className="flex justify-between items-center py-0 px-6 max-2xl:flex-col gap-2.5">
-            <span className="font-semibold text-gray-700">
-              Overview for selected period and category-
-            </span>
+      <div className="space-y-4 max-md:text-sm cursor-default">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
+              {/* Title Section */}
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-md">
+                  <TrendingUp className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-800 text-lg">Financial Overview</h3>
+                  <p className="text-sm text-gray-600">Selected period & category analysis</p>
+                </div>
+              </div>
 
-            <div className="flex gap-6 max-md:flex-wrap max-md:gap-2 max-md:justify-center">
-              {((filterType === "all" && [...incomeCategories.map(cat => cat.id), "all"].includes(filterCategory)) || filterType === "income") && <div className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                <span className="font-semibold text-green-600">
-                  Income: Rs {incomeDisp}
-                </span>
-              </div>}
-              {((filterType === "all" && [...expenseCategories.map(cat => cat.id), "all"].includes(filterCategory)) || filterType === "expense") && <div className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                <span className="font-semibold text-red-600">
-                  Expense: Rs {expenseDisp}
-                </span>
-              </div>}
-              {(filterType === "all" && filterCategory === "all") && <div className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                <span className="font-semibold text-yellow-600">
-                  Balance: Rs {incomeDisp - expenseDisp}
-                </span>
-              </div>}
-              <div className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-full bg-gray-500"></div>
-                <span className="font-semibold text-gray-600">
-                  Transactions: {filteredTransactions.length}
-                </span>
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full lg:w-auto">
+                {/* Income */}
+                {((filterType === "all" && [...incomeCategories.map(cat => cat.id), "all"].includes(filterCategory)) || filterType === "income") && (
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-3 text-center hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-sm"></div>
+                      <span className="font-semibold text-green-700 text-sm">Income</span>
+                    </div>
+                    <div className="text-lg font-bold text-green-900">Rs {incomeDisp}</div>
+                  </div>
+                )}
+
+                {/* Expense */}
+                {((filterType === "all" && [...expenseCategories.map(cat => cat.id), "all"].includes(filterCategory)) || filterType === "expense") && (
+                  <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-3 text-center hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-400 to-pink-500 shadow-sm"></div>
+                      <span className="font-semibold text-red-700 text-sm">Expense</span>
+                    </div>
+                    <div className="text-lg font-bold text-red-900">Rs {expenseDisp}</div>
+                  </div>
+                )}
+
+                {/* Balance */}
+                {(filterType === "all" && filterCategory === "all") && (
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3 text-center hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 shadow-sm"></div>
+                      <span className="font-semibold text-amber-700 text-sm">Balance</span>
+                    </div>
+                    <div className={`text-lg font-bold ${(incomeDisp - expenseDisp) >= 0 ? 'text-amber-900' : 'text-red-900'}`}>
+                      Rs {incomeDisp - expenseDisp}
+                    </div>
+                  </div>
+                )}
+
+                {/* Transactions Count */}
+                <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-xl p-3 text-center hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-gray-400 to-slate-500 shadow-sm"></div>
+                    <span className="font-semibold text-gray-700 text-sm">Transactions</span>
+                  </div>
+                  <div className="text-lg font-bold text-gray-900">{filteredTransactions.length}</div>
+                </div>
               </div>
             </div>
+
+            {/* Progress Bar for Balance (only shown when viewing all) */}
+            {(filterType === "all" && filterCategory === "all" && incomeDisp > 0) && (
+              <div className="mt-4 pt-4 border-t border-gray-200/60">
+                {/* Header */}
+                <div className="flex justify-between text-sm text-gray-700 mb-2 font-medium">
+                  <span>Income vs Expense</span>
+                  <span>
+                    {expenseDisp > incomeDisp
+                      ? "Over-budget!"
+                      : `${((expenseDisp / incomeDisp) * 100).toFixed(1)}% of income spent`}
+                  </span>
+                </div>
+
+                {/* Bar */}
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden relative">
+                  {/* Base (income axis) */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-500" />
+
+                  {/* Expense indicator */}
+                  <div
+                    className={`absolute inset-y-0 left-0 h-2 rounded-full bg-gradient-to-r ${
+                      expenseDisp > incomeDisp
+                        ? "from-red-500 to-red-600"
+                        : "from-amber-500 to-red-500"
+                    } transition-all duration-500`}
+                    style={{
+                      width: `${Math.min(100, (expenseDisp / incomeDisp) * 50)}%`
+                    }}
+                  />
+                </div>
+
+                {/* Footer stats */}
+                <div className="mt-2 flex justify-between text-xs text-gray-600">
+                  <span>Expense: Rs {expenseDisp} ({Math.min(100, (expenseDisp / incomeDisp) * 50).toFixed(1)}%)</span>
+                  <span>Income: Rs {incomeDisp} ({(100 - Math.min(100, (expenseDisp / incomeDisp) * 50)).toFixed(1)}%)</span>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

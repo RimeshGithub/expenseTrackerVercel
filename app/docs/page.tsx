@@ -30,7 +30,7 @@ export default function ExpenseTrackerDocs() {
           <section>
             <h2 className="text-2xl font-semibold">Quick start</h2>
             <p className="mt-2 text-slate-700">Steps to run the project locally:</p>
-            <pre className="mt-4 bg-slate-900/5 border border-slate-100 p-4 rounded-md text-sm text-slate-800">
+            <pre className="mt-4 bg-slate-900/5 border border-slate-100 p-4 rounded-md text-sm text-slate-800 overflow-auto">
 {`# install dependencies (pnpm is used in this repo, but npm/yarn also work)
 pnpm install
 
@@ -47,7 +47,7 @@ pnpm start`}
           <section>
             <h2 className="text-2xl font-semibold">Environment variables</h2>
             <p className="mt-2 text-slate-700">The app connects to Firebase. Instead of committing keys, set these environment variables in your local <code>.env.local</code> or in Vercel project settings.</p>
-            <pre className="mt-4 bg-slate-50 border border-slate-100 p-3 rounded-md text-sm text-slate-700">
+            <pre className="mt-4 bg-slate-50 border border-slate-100 p-3 rounded-md text-sm text-slate-700 overflow-auto">
 {`NEXT_PUBLIC_FIREBASE_API_KEY=...
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=...

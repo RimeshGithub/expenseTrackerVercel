@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react"
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
+  const [displayName, setDisplayName] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
@@ -39,7 +40,7 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
-      await signUp(email, password)
+      await signUp(email, password, displayName)
       router.push("/dashboard")
     } catch (error: any) {
       setError(error.message || "Failed to create account")
@@ -72,6 +73,19 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="name">Display Name</Label>
+              <Input
+                id="name"
+                type="text"
+                autoComplete="off"
+                placeholder="Enter your display name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
                 disabled={loading}
               />
             </div>
