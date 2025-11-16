@@ -143,7 +143,7 @@ export function EditTransactionForm({ transaction, onComplete, onCancel }: EditT
             value={date}
             required
             onChange={(e) => setDate(e.target.value)}
-            className="w-70 shadow-sm rounded-md p-2.5"
+            className="w-75 shadow-sm rounded-md p-2.5"
           /></label>
           
           <label className="flex items-center gap-2">BS:
@@ -151,7 +151,7 @@ export function EditTransactionForm({ transaction, onComplete, onCancel }: EditT
             <DatePicker               
               key={`${bs.year}-${bs.month}-${bs.date}`} 
               inputClassName="form-control"
-              className="shadow-sm rounded-md px-2.5 py-1.5 w-70 cursor-default"
+              className="shadow-sm rounded-md px-2.5 py-1.5 w-75 cursor-default"
               defaultDate={`${bs.year}-${String(bs.month + 1).padStart(2, '0')}-${String(bs.date).padStart(2, '0')}`}
               onChange={(newDate) => setDate(newDate.adDate)}
               options={{ calenderLocale: 'ne', valueLocale: 'en' }}

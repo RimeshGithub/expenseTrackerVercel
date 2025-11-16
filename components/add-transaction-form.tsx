@@ -87,12 +87,12 @@ export function AddTransactionForm() {
   }
 
   return (
-    <Card className="mb-60">
+    <Card className="mb-80 max-w-3xl">
       <CardHeader>
         <CardTitle>New Transaction</CardTitle>
         <CardDescription>Add a new income or expense to track your finances.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="max-sm:px-4">
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
             <Alert variant="destructive">
@@ -200,28 +200,28 @@ export function AddTransactionForm() {
           </div>
 
           {/* Date */}
-          <div className="space-y-2">
+          <div className="space-y-2 text-xs">
             <Label htmlFor="date">Date</Label>
 
             <div className="flex gap-2 items-center max-md:flex-col max-md:items-start" id="date">
-              <label className="flex gap-2 items-center">
+              <label className="flex gap-1 items-center">
                 AD:
                 <Input 
                   type="date"
                   value={date}
                   required
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-70 shadow-sm rounded-md p-2.5 mr-2"
+                  className="w-75 shadow-sm rounded-md p-2.5 mr-2"
                 />
               </label>
               
-              <label className="flex gap-2 items-center">
+              <label className="flex gap-1 items-center">
                 BS:
                 <div onClick={() => !date && setDate(format(new Date(), "yyyy-MM-dd"))}>
                   <DatePicker               
                     key={`${bs.year}-${bs.month}-${bs.date}`} 
                     inputClassName="form-control"
-                    className="shadow-sm rounded-md px-2.5 py-1.5 w-70 cursor-default"
+                    className="shadow-sm rounded-md px-2.5 py-1.5 w-75 cursor-default"
                     defaultDate={`${bs.year}-${String(bs.month + 1).padStart(2, '0')}-${String(bs.date).padStart(2, '0')}`}
                     onChange={(newDate) => setDate(newDate.adDate)}
                     options={{ calenderLocale: 'ne', valueLocale: 'en' }}
